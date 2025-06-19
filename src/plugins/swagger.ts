@@ -4,7 +4,7 @@ import { Elysia } from 'elysia'
 
 export const swaggerPlugin = new Elysia().use(
   swagger({
-    path: '/docs',               // 🧭 Rota da interface Swagger UI
+    path: '/docs',
     documentation: {
       info: {
         title: 'User API',

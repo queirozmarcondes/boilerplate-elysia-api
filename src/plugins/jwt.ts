@@ -6,7 +6,10 @@ export const jwtPlugin = new Elysia().use(
   jwt({
     name: 'jwt',
     secret: process.env.JWT_SECRET || 'your-secret-key',
-    exp: '7d'
+    exp: '7d',
+    alg: 'HS256',
+    iss: 'your-issuer',
+    aud: 'your-audience',
   })
 )
 

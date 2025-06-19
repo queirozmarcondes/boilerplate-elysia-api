@@ -20,3 +20,5 @@ export const authGuard = (app: Elysia) =>
 
       return { user }
     })
+
+    
