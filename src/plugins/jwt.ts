@@ -5,6 +5,9 @@ import { Elysia } from 'elysia'
 export const jwtPlugin = new Elysia().use(
   jwt({
     name: 'jwt',
-    secret: 'Fischl von Luftschloss Narfidort'
+    secret: process.env.JWT_SECRET || 'your-secret-key',
+    exp: '7d'
   })
 )
+
+export type JwtPluginContext = typeof jwtPlugin // ✅ exporta o tipo

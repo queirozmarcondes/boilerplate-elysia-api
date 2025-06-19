@@ -4,6 +4,7 @@ import { swaggerPlugin } from './plugins/swagger'
 import { userRoutes } from './routes/user.routes'
 import { jwtPlugin } from './plugins/jwt'
 import { authRoutes } from './routes/auth.routes'
+import jwt from '@elysiajs/jwt'
 
 new Elysia()
     .use(swaggerPlugin)
