@@ -10,7 +10,7 @@ export const jwtPlugin = new Elysia().use(
     alg: 'HS256',
     iss: 'your-issuer',
     aud: 'your-audience',
-  })
+  }),
 )
 
 export type JwtPluginContext = typeof jwtPlugin // ✅ exporta o tipo

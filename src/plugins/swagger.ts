@@ -9,14 +9,14 @@ export const swaggerPlugin = new Elysia().use(
       info: {
         title: 'User API',
         version: '1.0.0',
-        description: 'Documentação da API de usuários com Bun + Elysia'
+        description: 'Documentação da API de usuários com Bun + Elysia',
       },
       tags: [
         {
           name: 'Users',
-          description: 'Operações relacionadas a usuários'
-        }
-      ]
+          description: 'Operações relacionadas a usuários',
+        },
+      ],
     },
-  })
+  }),
 )

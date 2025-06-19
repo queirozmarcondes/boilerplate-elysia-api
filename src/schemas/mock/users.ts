@@ -5,6 +5,6 @@ export const mockUsers = [
     name: 'Renato',
     email: 'renato@example.com',
     password: '123456',
-    roles: 'user'
-  }
+    roles: 'user',
+  },
 ]

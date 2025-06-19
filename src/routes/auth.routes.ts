@@ -9,17 +9,15 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   .use(
     jwt({
       name: 'jwt',
-      secret: process.env.JWT_SECRET || 'your-secret-key' // Use environment variable
-    })
+      secret: process.env.JWT_SECRET || 'your-secret-key', // Use environment variable
+    }),
   )
-  
+
   // Login
   .post(
     '/login',
     async ({ body, jwt, cookie: { auth }, set }) => {
-      const user = mockUsers.find(
-        (u) => u.email === body.email && u.password === body.password
-      )
+      const user = mockUsers.find((u) => u.email === body.email && u.password === body.password)
 
       if (!user) {
         set.status = 401
@@ -30,14 +28,14 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         id: user.id,
         name: user.name,
         email: user.email,
-        roles: user.roles
+        roles: user.roles,
       })
 
       auth.set({
         value: token,
         httpOnly: true,
         path: '/',
-        maxAge: 7 * 86400 // 7 dias
+        maxAge: 7 * 86400, // 7 dias
       })
 
       return { message: 'Login realizado com sucesso' }
@@ -45,12 +43,12 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     {
       body: t.Object({
         email: t.String({ format: 'email' }),
-        password: t.String({ minLength: 6 })
+        password: t.String({ minLength: 6 }),
       }),
       detail: {
-        tags: ['Auth']
-      }
-    }
+        tags: ['Auth'],
+      },
+    },
   )
 
   // Logout
@@ -62,9 +60,9 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     },
     {
       detail: {
-        tags: ['Auth']
-      }
-    }
+        tags: ['Auth'],
+      },
+    },
   )
 
   // Rota protegida
@@ -73,11 +71,11 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     '/me',
     ({ user }) => ({
       message: `Olá, ${user.name}`,
-      user
+      user,
     }),
     {
       detail: {
-        tags: ['Auth']
-      }
-    }
+        tags: ['Auth'],
+      },
+    },
   )
