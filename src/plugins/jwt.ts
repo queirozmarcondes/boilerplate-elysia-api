@@ -13,4 +13,4 @@ export const jwtPlugin = new Elysia().use(
   }),
 )
 
-export type JwtPluginContext = typeof jwtPlugin // ✅ exporta o tipo
+export type JwtPluginContext = typeof jwtPlugin

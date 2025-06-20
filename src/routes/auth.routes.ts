@@ -1,8 +1,9 @@
 // routes/auth.routes.ts
 import { Elysia, t } from 'elysia'
 import { jwt } from '@elysiajs/jwt' // Make sure to install this package
-import { mockUsers } from '../schemas/mock/users'
+// import { mockUsers } from '../mock/users'
 import { authGuard } from '../middlewares/auth.guard'
+import { getUserByEmail, verifyPassword } from '../services/auth.service'
 
 export const authRoutes = new Elysia({ prefix: '/auth' })
   // Add JWT plugin first
@@ -17,9 +18,9 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   .post(
     '/login',
     async ({ body, jwt, cookie: { auth }, set }) => {
-      const user = mockUsers.find((u) => u.email === body.email && u.password === body.password)
+      const user = getUserByEmail(body.email)
 
-      if (!user) {
+      if (!user || !(await verifyPassword(body.password, user.password))) {
         set.status = 401
         return { error: 'Credenciais inválidas' }
       }
