@@ -78,24 +78,6 @@ export function getUserById(id: string): User | null {
   }
 }
 
-// Atualiza parcialmente o usuário
-// export function updateUser(id: string, data: UserUpdate): User | null {
-//   const existing = getUserById(id)
-//   if (!existing) return null
-
-//   const updated = { ...existing, ...data, updatedAt: new Date().toISOString() }
-//   db.run(
-//     `
-//     UPDATE users
-//     SET name = $name, email = $email, telefone = $telefone,
-//         password = $password, cpf = $cpf, isActive = $isActive,
-//         roles = $roles, updatedAt = $updatedAt
-//     WHERE id = $id
-//   `,
-//     updated as any,
-//   )
-//   return updated as User
-// }
 
 export function updateUser(id: string, data: UserUpdate): User | null {
   const existing = getUserById(id)
