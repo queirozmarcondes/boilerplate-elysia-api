@@ -58,10 +58,16 @@ export async function createUser(data: UserCreate): Promise<Omit<User, 'password
   }
 }
 
-// Busca todos usuários
+// Busca todos usuários com isActive convertido para boolean
 export function getAllUsers(): User[] {
-  return db.query('SELECT * FROM users;').all() as User[]
+  const result = db.query('SELECT * FROM users;').all() as User[]
+
+  return result.map((user: User) => ({
+    ...user,
+    isActive: Boolean(user.isActive), // converte 0/1 para boolean
+  }))
 }
+
 
 // Busca um usuário por ID
 export function getUserById(id: string): User | null {
