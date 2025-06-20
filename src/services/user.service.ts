@@ -121,13 +121,28 @@ export function updateUser(id: string, data: UserUpdate): User | null {
   return updated
 }
 
-
-
-// Desativa o usuário (soft delete)
+// 4) Função para soft delete de usuário
 export function softDeleteUser(id: string): boolean {
+  const existing = getUserById(id)
+  if (!existing) return false
+
+  // inverte o booleano atual
+  const novoEstado = !existing.isActive
+
   const stmt = db.query(`
-    UPDATE users SET isActive = 0, updatedAt = $updatedAt WHERE id = $id
+    UPDATE users
+    SET isActive = $isActive,
+        updatedAt = $updatedAt
+    WHERE id = $id
   `)
-  const changes = stmt.run({ $id: id, $updatedAt: new Date().toISOString() }).changes
+
+  const changes = stmt
+    .run({
+      $id: id,
+      $isActive: novoEstado ? 1 : 0,
+      $updatedAt: new Date().toISOString(),
+    })
+    .changes
+
   return changes > 0
 }
