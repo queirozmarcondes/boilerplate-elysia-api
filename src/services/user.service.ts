@@ -72,27 +72,74 @@ export function getAllUsers(): User[] {
 // Busca um usuário por ID
 export function getUserById(id: string): User | null {
   const stmt = db.query('SELECT * FROM users WHERE id = $id;')
-  return (stmt.get({ $id: id }) as User | undefined) ?? null
+  return {
+    ...(stmt.get({ $id: id }) as User),
+    isActive: Boolean((stmt.get({ $id: id }) as User).isActive), // converte 0/1 para boolean
+  }
 }
 
 // Atualiza parcialmente o usuário
+// export function updateUser(id: string, data: UserUpdate): User | null {
+//   const existing = getUserById(id)
+//   if (!existing) return null
+
+//   const updated = { ...existing, ...data, updatedAt: new Date().toISOString() }
+//   db.run(
+//     `
+//     UPDATE users
+//     SET name = $name, email = $email, telefone = $telefone,
+//         password = $password, cpf = $cpf, isActive = $isActive,
+//         roles = $roles, updatedAt = $updatedAt
+//     WHERE id = $id
+//   `,
+//     updated as any,
+//   )
+//   return updated as User
+// }
+
 export function updateUser(id: string, data: UserUpdate): User | null {
   const existing = getUserById(id)
   if (!existing) return null
 
-  const updated = { ...existing, ...data, updatedAt: new Date().toISOString() }
-  db.run(
-    `
+  const updated = {
+    ...existing,
+    ...data,
+    email: data.email ?? existing.email,
+    telefone: data.telefone ?? existing.telefone,
+    cpf: data.cpf ?? existing.cpf,
+    name: data.name ?? existing.name,
+    password: data.password ?? existing.password,
+    isActive: data.isActive ?? existing.isActive,
+    roles: data.roles ?? existing.roles,
+    updatedAt: new Date().toISOString(),
+    id: existing.id,  // insere id diretamente
+  }
+
+  // 1) Prepara o statement
+  const stmt = db.prepare(`
     UPDATE users
-    SET name = $name, email = $email, telefone = $telefone,
-        password = $password, cpf = $cpf, isActive = $isActive,
-        roles = $roles, updatedAt = $updatedAt
+    SET 
+      name = $name,
+      email = $email,
+      telefone = $telefone,
+      password = $password,
+      cpf = $cpf,
+      isActive = $isActive,
+      roles = $roles,
+      updatedAt = $updatedAt
     WHERE id = $id
-  `,
-    updated as any,
-  )
-  return updated as User
+  `)
+
+  // 2) Executa com o objeto de bindings
+  stmt.run(updated)
+
+  // 3) Garante booleano correto
+  updated.isActive = Boolean(updated.isActive)
+
+  return updated
 }
+
+
 
 // Desativa o usuário (soft delete)
 export function softDeleteUser(id: string): boolean {
