@@ -26,9 +26,22 @@ export const userCreateSchema = userBaseSchema
 
 export const userUpdateSchema = t.Partial(userBaseSchema)
 
+// export const userResponseSchema = t.Object({
+//   id: t.String(),
+//   ...userBaseSchema.properties,
+//   createdAt: t.String({ format: 'date-time' }),
+//   updatedAt: t.String({ format: 'date-time' }),
+// })
+
 export const userResponseSchema = t.Object({
   id: t.String(),
-  ...userBaseSchema.properties,
+  name: t.String(),
+  email: t.String({ format: 'email' }),
+  telefone: t.String(),
+  cpf: t.String(),
+  isActive: t.Boolean(),
+  roles: RoleEnum,
   createdAt: t.String({ format: 'date-time' }),
   updatedAt: t.String({ format: 'date-time' }),
 })
+

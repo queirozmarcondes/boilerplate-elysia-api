@@ -21,7 +21,7 @@ db.run(`
 
 // Insere um usuário e retorna o objeto
 
-export async function createUser(data: UserCreate): Promise<User> {
+export async function createUser(data: UserCreate): Promise<Omit<User, 'password'>> {
   const id = crypto.randomUUID()
   const now = new Date().toISOString()
   const hashedPassword = await hashPassword(data.password)
@@ -52,7 +52,7 @@ export async function createUser(data: UserCreate): Promise<User> {
   return {
     id,
     ...data,
-    password: hashedPassword,
+    //password: hashedPassword,
     createdAt: now,
     updatedAt: now,
   }
