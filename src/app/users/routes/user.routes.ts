@@ -14,10 +14,10 @@ export const userRoutes = new Elysia({ prefix: '/users' })
     '/',
     async () => {
       const users = await handleGetAllUsers()
-      // Map roles to match the schema ("moderador" -> "moderator")
+      // Map roles to match the schema ("collaborator" -> "collaborator")
       return users.map((user: any) => ({
         ...user,
-        roles: user.roles.map((role: string) => (role === 'moderador' ? 'moderator' : role)),
+        roles: user.roles.map((role: string) => (role === 'collaborator' ? 'collaborator' : role)),
       }))
     },
     {
@@ -30,12 +30,12 @@ export const userRoutes = new Elysia({ prefix: '/users' })
     '/:id',
     async ({ params }) => {
       const user = await handleGetUserById(params.id)
-      // Map roles to match the schema ("moderador" -> "moderator") and filter allowed roles
-      const allowedRoles = ['user', 'admin', 'moderator'] as const
+      // Map roles to match the schema ("collaborator" -> "collaborator") and filter allowed roles
+      const allowedRoles = ['user', 'admin', 'collaborator'] as const
       return {
         ...user,
         roles: user.roles
-          .map((role: string) => (role === 'moderador' ? 'moderator' : role))
+          .map((role: string) => (role === 'collaborator' ? 'collaborator' : role))
           .filter((role: string): role is (typeof allowedRoles)[number] =>
             allowedRoles.includes(role as (typeof allowedRoles)[number]),
           ),

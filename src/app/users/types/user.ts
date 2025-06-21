@@ -11,7 +11,7 @@ export type User = {
   updatedAt: string
 }
 
-export type Role = 'user' | 'admin' | 'moderator'
+export type Role = 'user' | 'admin' | 'collaborator'
 
 export type UserCreate = Omit<User, 'id' | 'createdAt' | 'updatedAt'>
 export type UserUpdate = Partial<UserCreate>

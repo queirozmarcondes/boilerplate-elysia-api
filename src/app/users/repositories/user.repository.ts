@@ -91,13 +91,15 @@ export const UserRepository = {
     const existing = await this.findById(id)
     if (!existing) return null
 
-    // Monta dados mesclados
+    //
     const updated: any = {
-      ...existing,
-      ...partial,
-      isActive: partial.isActive ?? existing.isActive,
-      updatedAt: new Date().toISOString(),
-    }
+  ...existing,
+  ...Object.fromEntries(
+    Object.entries(partial).filter(([_, v]) => v !== undefined)
+  ),
+  updatedAt: new Date().toISOString(),
+}
+
 
     // Persistir
     await db
@@ -123,7 +125,7 @@ export const UserRepository = {
         $cpf: updated.cpf,
         $password: updated.password,
         $isActive: updated.isActive ? 1 : 0,
-        $roles: updated.roles,
+        $roles: JSON.stringify(updated.roles),
         $updatedAt: updated.updatedAt,
       })
 
