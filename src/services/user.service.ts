@@ -76,49 +76,58 @@ export function getUserById(id: string): User | null {
   }
 }
 
-export function updateUser(id: string, data: UserUpdate): User | null {
-  const existing = getUserById(id)
+// Atualiza no banco e retorna o usuario atualizado
+
+export async function updateUser(id: string, data: UserUpdate): Promise<User | null> {
+  const existing = db.query<User, { $id: string }>(
+    'SELECT * FROM users WHERE id = $id LIMIT 1;'
+  ).get({ $id: id })
+
   if (!existing) return null
 
-  const updated = {
-    ...existing,
-    ...data,
-    email: data.email ?? existing.email,
-    telefone: data.telefone ?? existing.telefone,
-    cpf: data.cpf ?? existing.cpf,
-    name: data.name ?? existing.name,
-    password: data.password ?? existing.password,
-    isActive: data.isActive ?? existing.isActive,
-    roles: data.roles ?? existing.roles,
-    updatedAt: new Date().toISOString(),
-    id: existing.id, // insere id diretamente
+  // Se veio nova senha, faça o hash
+  let newPassword = existing.password
+  if (data.password) {
+    newPassword = await hashPassword(data.password)
   }
 
-  // 1) Prepara o statement
-  const stmt = db.prepare(`
-    UPDATE users
-    SET 
-      name = $name,
-      email = $email,
-      telefone = $telefone,
-      password = $password,
-      cpf = $cpf,
-      isActive = $isActive,
-      roles = $roles,
+  const now = new Date().toISOString()
+
+  // Execute o UPDATE usando parâmetros
+  db.query(`
+    UPDATE users SET
+      name      = $name,
+      email     = $email,
+      telefone  = $telefone,
+      cpf       = $cpf,
+      password  = $password,
+      isActive  = $isActive,
+      roles     = $roles,
       updatedAt = $updatedAt
-    WHERE id = $id
-  `)
+    WHERE id = $id;
+  `).run({
+    $id: id,
+    $name: data.name ?? existing.name,
+    $email: data.email ?? existing.email,
+    $telefone: data.telefone ?? existing.telefone,
+    $cpf: data.cpf ?? existing.cpf,
+    $password: newPassword,
+    $isActive: data.isActive != null ? (data.isActive ? 1 : 0) : existing.isActive,
+    $roles: data.roles ?? existing.roles,
+    $updatedAt: now,
+  })
 
-  // 2) Executa com o objeto de bindings
-  stmt.run(updated)
+  // Recarregue e retorne o usuário
+  const updated = db.query<User, { $id: string }>(
+    'SELECT * FROM users WHERE id = $id LIMIT 1;'
+  ).get({ $id: id })
 
-  // 3) Garante booleano correto
+  if (!updated) return null
   updated.isActive = Boolean(updated.isActive)
-
   return updated
 }
 
-// 4) Função para soft delete de usuário
+
 export function softDeleteUser(id: string): boolean {
   const existing = getUserById(id)
   if (!existing) return false
