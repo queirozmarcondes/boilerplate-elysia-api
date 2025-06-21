@@ -1,15 +1,16 @@
 // plugins/jwt.ts
 import { jwt } from '@elysiajs/jwt'
 import { Elysia } from 'elysia'
+import { environmentVariables } from '../config/env'
 
 export const jwtPlugin = new Elysia().use(
   jwt({
     name: 'jwt',
-    secret: process.env.JWT_SECRET || 'your-secret-key',
-    exp: '7d',
-    alg: 'HS256',
-    iss: 'your-issuer',
-    aud: 'your-audience',
+    secret: environmentVariables.JWT.secret,
+    exp: environmentVariables.JWT.exp,
+    alg: environmentVariables.JWT.alg as 'HS256',
+    iss: environmentVariables.JWT.iss,
+    aud: environmentVariables.JWT.aud,
   }),
 )
 

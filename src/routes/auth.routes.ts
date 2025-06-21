@@ -1,82 +1,44 @@
-// routes/auth.routes.ts
-import { Elysia, t } from 'elysia'
-import { jwt } from '@elysiajs/jwt' // Make sure to install this package
-// import { mockUsers } from '../mock/users'
+import { loginHandler, logoutHandler } from '../controllers/auth.controller'
 import { authGuard } from '../middlewares/auth.guard'
-import { getUserByEmail, verifyPassword } from '../services/auth.service'
+import { Cookie, Elysia, t } from 'elysia'
+import { loginSchema } from '../schemas/auth'
 
 export const authRoutes = new Elysia({ prefix: '/auth' })
-  // Add JWT plugin first
-  .use(
-    jwt({
-      name: 'jwt',
-      secret: process.env.JWT_SECRET || 'your-secret-key', // Use environment variable
-    }),
-  )
 
-  // Login
   .post(
     '/login',
-    async ({ body, jwt, cookie: { auth }, set }) => {
-      const user = getUserByEmail(body.email)
-
-      if (!user || !(await verifyPassword(body.password, user.password))) {
-        set.status = 401
-        return { error: 'Credenciais inválidas' }
-      }
-
-      const token = await jwt.sign({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        roles: user.roles,
-      })
-
-      auth.set({
-        value: token,
-        httpOnly: true,
-        path: '/',
-        maxAge: 7 * 86400, // 7 dias
-      })
-
-      return { message: 'Login realizado com sucesso' }
+    async (ctx) => {
+      // Passa o contexto completo para o handler
+      return await loginHandler(ctx as any)
     },
     {
-      body: t.Object({
-        email: t.String({ format: 'email' }),
-        password: t.String({ minLength: 6 }),
-      }),
-      detail: {
-        tags: ['Auth'],
-      },
+      body: loginSchema,
+      detail: { tags: ['Auth'] },
     },
   )
 
-  // Logout
   .post(
     '/logout',
-    ({ cookie: { auth } }) => {
-      auth.remove()
-      return { message: 'Logout realizado com sucesso' }
+    (ctx) => {
+      const authCookie = ctx.cookie.auth
+      if (!authCookie) {
+        return { error: 'Cookie não encontrado' }
+      }
+      return logoutHandler(authCookie as Cookie<'auth'>)
     },
     {
-      detail: {
-        tags: ['Auth'],
-      },
+      detail: { tags: ['Auth'] },
     },
   )
 
-  // Rota protegida
   .use(authGuard)
   .get(
     '/me',
-    ({ user }) => ({
-      message: `Olá, ${user.name}`,
-      user,
+    (ctx: { user?: { name: string } }) => ({
+      message: ctx.user ? `Olá, ${ctx.user.name}` : 'Usuário não autenticado',
+      user: ctx.user,
     }),
     {
-      detail: {
-        tags: ['Auth'],
-      },
+      detail: { tags: ['Auth'] },
     },
   )

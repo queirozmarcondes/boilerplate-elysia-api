@@ -1,7 +1,7 @@
 // src/services/users.service.ts
 import { db } from '../config/db'
-import type { User, UserCreate, UserUpdate } from '../types/user'
 import { hashPassword } from './auth.service'
+import type { User, UserCreate, UserUpdate } from '../types/user'
 
 // Cria tabela users, caso não exista
 db.run(`
@@ -52,7 +52,6 @@ export async function createUser(data: UserCreate): Promise<Omit<User, 'password
   return {
     id,
     ...data,
-    //password: hashedPassword,
     createdAt: now,
     updatedAt: now,
   }

@@ -1,22 +1,21 @@
-// middlewares/auth.guard.ts
 import { Elysia } from 'elysia'
-import { jwt } from '@elysiajs/jwt' // Make sure to install this package
+import { jwt } from '@elysiajs/jwt'
+import { CheckJwtPayload } from '../utils/validators/jwt'
+import type { JwtPayload } from '../schemas/auth'
 
 export const authGuard = (app: Elysia) =>
   app
-    .use(
-      jwt({
-        name: 'jwt',
-        secret: process.env.JWT_SECRET || 'your-secret-key', // Use environment variable
-      }),
-    )
+    .use(jwt({ name: 'jwt', secret: process.env.JWT_SECRET! }))
     .derive(async ({ jwt, cookie: { auth }, set }) => {
-      const user = await jwt.verify(auth.value)
+      const raw = await jwt.verify(auth.value)
 
-      if (!user) {
+      if (!raw || !CheckJwtPayload.Check(raw)) {
         set.status = 401
-        throw new Error('Unauthorized')
+        return { error: 'Unauthorized' }
       }
+
+      const { id, name, email, roles } = raw as JwtPayload
+      const user: JwtPayload = { id, name, email, roles }
 
       return { user }
     })

@@ -1,84 +1,53 @@
-// routes/users.ts
 import { Elysia, t } from 'elysia'
-import { userCreateSchema, userResponseSchema, userUpdateSchema } from '../schemas/user'
+import {
+  userCreateSchema,
+  userResponseSchema,
+  userUpdateSchema,
+} from '../schemas/user'
 
 import {
-  createUser,
-  getAllUsers,
-  getUserById,
-  updateUser,
-  softDeleteUser,
-} from '../services/user.service'
+  handleCreateUser,
+  handleGetAllUsers,
+  handleGetUserById,
+  handleUpdateUser,
+  handleSoftDeleteUser,
+} from '../controllers/user.controller'
 
 export const userRoutes = new Elysia({ prefix: '/users' })
-  // Listar todos
-  .get('/', async () => await getAllUsers(), {
+  .get('/', handleGetAllUsers, {
     response: t.Array(userResponseSchema),
-    detail: {
-      tags: ['Users'],
-    },
+    detail: { tags: ['Users'] },
   })
-  // Buscar por ID
-  .get(
-    '/:id',
-    async ({ params }) => {
-      const user = await getUserById(params.id)
-      if (!user) {
-        throw new Error(`Usuário ${params.id} não encontrado`)
-      }
-      return user
-    },
-    {
-      params: t.Object({ id: t.String() }),
-      response: userResponseSchema,
-      detail: { tags: ['Users'] },
-    },
-  )
 
-  // Criar novo usuário
-  .post(
-    '/',
-    async ({ body, set }) => {
-      const user = await createUser(body);
-      set.status = 201
-      return user
-    },
-    {
-      body: userCreateSchema,
-      response: {
-        201: userResponseSchema,
-      },
-      detail: { tags: ['Users'] },
-    },
-  )
-  // Atualizar parcialmente
-  .patch(
-    '/:id',
-    async ({ params, body }) => {
-      const updated = await updateUser(params.id, body)
-      if (!updated) {
-        throw new Error(`Usuário ${params.id} não encontrado`)
-      }
-      return updated
-    },
-    {
-      params: t.Object({ id: t.String() }),
-      body: userUpdateSchema,
-      response: userResponseSchema,
-      detail: { tags: ['Users'] },
-    },
-  )
+  .get('/:id', async ({ params }) => handleGetUserById(params.id), {
+    params: t.Object({ id: t.String() }),
+    response: userResponseSchema,
+    detail: { tags: ['Users'] },
+  })
 
-  // Soft delete (desativar)
-  .delete(
-    '/:id',
-    async ({ params }) => {
-      const ok = await softDeleteUser(params.id)
-      return ok
-    },
-    {
-      params: t.Object({ id: t.String() }),
-      response: t.Boolean(),
-      detail: { tags: ['Users'] },
-    },
-  )
+.post(
+  '/',
+  async ({ body, set }) => {
+    const user = await handleCreateUser(body)
+    set.status = 201   // ← status aqui, na rota
+    return user
+  },
+  {
+    body: userCreateSchema,
+    response: { 201: userResponseSchema },
+    detail: { tags: ['Users'] },
+  },
+)
+
+  .patch('/:id', async ({ params, body }) => handleUpdateUser(params.id, body), {
+    params: t.Object({ id: t.String() }),
+    body: userUpdateSchema,
+    response: userResponseSchema,
+    detail: { tags: ['Users'] },
+  })
+
+  .delete('/:id', async ({ params }) => handleSoftDeleteUser(params.id), {
+    params: t.Object({ id: t.String() }),
+    response: t.Boolean(),
+    detail: { tags: ['Users'] },
+  })

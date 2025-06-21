@@ -3,7 +3,7 @@ import type { User } from '../types/user'
 import { hash, compare } from 'bcryptjs'
 
 // Buscar usuário por email
-export function getUserByEmail(email: string): User | null {
+export async function getUserByEmail(email: string): Promise<User | null> {
   const stmt = db.query('SELECT * FROM users WHERE email = $email LIMIT 1;')
   return (stmt.get({ $email: email }) as User | undefined) ?? null
 }
