@@ -79,9 +79,9 @@ export function getUserById(id: string): User | null {
 // Atualiza no banco e retorna o usuario atualizado
 
 export async function updateUser(id: string, data: UserUpdate): Promise<User | null> {
-  const existing = db.query<User, { $id: string }>(
-    'SELECT * FROM users WHERE id = $id LIMIT 1;'
-  ).get({ $id: id })
+  const existing = db
+    .query<User, { $id: string }>('SELECT * FROM users WHERE id = $id LIMIT 1;')
+    .get({ $id: id })
 
   if (!existing) return null
 
@@ -94,7 +94,8 @@ export async function updateUser(id: string, data: UserUpdate): Promise<User | n
   const now = new Date().toISOString()
 
   // Execute o UPDATE usando parâmetros
-  db.query(`
+  db.query(
+    `
     UPDATE users SET
       name      = $name,
       email     = $email,
@@ -105,7 +106,8 @@ export async function updateUser(id: string, data: UserUpdate): Promise<User | n
       roles     = $roles,
       updatedAt = $updatedAt
     WHERE id = $id;
-  `).run({
+  `,
+  ).run({
     $id: id,
     $name: data.name ?? existing.name,
     $email: data.email ?? existing.email,
@@ -118,15 +120,14 @@ export async function updateUser(id: string, data: UserUpdate): Promise<User | n
   })
 
   // Recarregue e retorne o usuário
-  const updated = db.query<User, { $id: string }>(
-    'SELECT * FROM users WHERE id = $id LIMIT 1;'
-  ).get({ $id: id })
+  const updated = db
+    .query<User, { $id: string }>('SELECT * FROM users WHERE id = $id LIMIT 1;')
+    .get({ $id: id })
 
   if (!updated) return null
   updated.isActive = Boolean(updated.isActive)
   return updated
 }
-
 
 export function softDeleteUser(id: string): boolean {
   const existing = getUserById(id)

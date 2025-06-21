@@ -1,9 +1,5 @@
 import { Elysia, t } from 'elysia'
-import {
-  userCreateSchema,
-  userResponseSchema,
-  userUpdateSchema,
-} from '../schemas/user'
+import { userCreateSchema, userResponseSchema, userUpdateSchema } from '../schemas/user'
 
 import {
   handleCreateUser,
@@ -25,19 +21,19 @@ export const userRoutes = new Elysia({ prefix: '/users' })
     detail: { tags: ['Users'] },
   })
 
-.post(
-  '/',
-  async ({ body, set }) => {
-    const user = await handleCreateUser(body)
-    set.status = 201   // ← status aqui, na rota
-    return user
-  },
-  {
-    body: userCreateSchema,
-    response: { 201: userResponseSchema },
-    detail: { tags: ['Users'] },
-  },
-)
+  .post(
+    '/',
+    async ({ body, set }) => {
+      const user = await handleCreateUser(body)
+      set.status = 201 // ← status aqui, na rota
+      return user
+    },
+    {
+      body: userCreateSchema,
+      response: { 201: userResponseSchema },
+      detail: { tags: ['Users'] },
+    },
+  )
 
   .patch('/:id', async ({ params, body }) => handleUpdateUser(params.id, body), {
     params: t.Object({ id: t.String() }),
