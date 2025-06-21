@@ -1,9 +1,9 @@
 // index.ts
 import { Elysia } from 'elysia'
 import { swaggerPlugin } from './plugins/swagger'
-import { userRoutes } from './routes/user.routes'
+import { userRoutes } from './app/users/routes/user.routes'
 import { jwtPlugin } from './plugins/jwt'
-import { authRoutes } from './routes/auth.routes'
+import { authRoutes } from './app/auth/routes/auth.routes'
 import { corsPlugin } from './plugins/cors'
 
 const app = new Elysia()

@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia'
 import { jwt } from '@elysiajs/jwt'
-import { CheckJwtPayload } from '../utils/validators/jwt'
+import { CheckJwtPayload } from '../../../utils/validators/jwt'
 import type { JwtPayload } from '../schemas/auth'
 
 export const authGuard = (app: Elysia) =>

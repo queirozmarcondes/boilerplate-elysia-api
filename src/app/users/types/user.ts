@@ -6,10 +6,12 @@ export type User = {
   password: string
   cpf: string
   isActive: boolean
-  roles: 'user' | 'admin' | 'moderator'
+  roles: Role[]
   createdAt: string
   updatedAt: string
 }
+
+export type Role = 'user' | 'admin' | 'moderator'
 
 export type UserCreate = Omit<User, 'id' | 'createdAt' | 'updatedAt'>
 export type UserUpdate = Partial<UserCreate>

@@ -1,5 +1,5 @@
-import { db } from '../config/db'
-import type { User } from '../types/user'
+import { db } from '../../../config/db'
+import type { User } from '../../users/types/user'
 import { hash, compare } from 'bcryptjs'
 
 // Buscar usuário por email

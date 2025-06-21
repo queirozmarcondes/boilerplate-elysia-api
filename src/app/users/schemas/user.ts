@@ -1,16 +1,7 @@
-// schemas/user.ts
 import { t } from 'elysia'
 
-export const RoleEnum = t.Enum(
-  {
-    user: 'user',
-    admin: 'admin',
-    moderator: 'moderator',
-  },
-  {
-    default: 'user',
-  },
-)
+// Define os valores possíveis de roles
+const RoleLiteral = t.Union([t.Literal('user'), t.Literal('admin'), t.Literal('moderator')])
 
 export const userBaseSchema = t.Object({
   name: t.String(),
@@ -19,7 +10,7 @@ export const userBaseSchema = t.Object({
   password: t.String({ minLength: 6 }),
   cpf: t.String(),
   isActive: t.Boolean({ default: true }),
-  roles: RoleEnum,
+  roles: t.Array(RoleLiteral), // <-- Agora é um array de roles válidos
 })
 
 export const userCreateSchema = userBaseSchema
@@ -33,7 +24,7 @@ export const userResponseSchema = t.Object({
   telefone: t.String(),
   cpf: t.String(),
   isActive: t.Boolean(),
-  roles: RoleEnum,
+  roles: t.Array(RoleLiteral), // <-- Corrigido também aqui
   createdAt: t.String({ format: 'date-time' }),
   updatedAt: t.String({ format: 'date-time' }),
 })
