@@ -68,7 +68,6 @@ export function getAllUsers(): User[] {
   }))
 }
 
-
 // Busca um usuário por ID
 export function getUserById(id: string): User | null {
   const stmt = db.query('SELECT * FROM users WHERE id = $id;')
@@ -77,7 +76,6 @@ export function getUserById(id: string): User | null {
     isActive: Boolean((stmt.get({ $id: id }) as User).isActive), // converte 0/1 para boolean
   }
 }
-
 
 export function updateUser(id: string, data: UserUpdate): User | null {
   const existing = getUserById(id)
@@ -94,7 +92,7 @@ export function updateUser(id: string, data: UserUpdate): User | null {
     isActive: data.isActive ?? existing.isActive,
     roles: data.roles ?? existing.roles,
     updatedAt: new Date().toISOString(),
-    id: existing.id,  // insere id diretamente
+    id: existing.id, // insere id diretamente
   }
 
   // 1) Prepara o statement
@@ -136,13 +134,11 @@ export function softDeleteUser(id: string): boolean {
     WHERE id = $id
   `)
 
-  const changes = stmt
-    .run({
-      $id: id,
-      $isActive: novoEstado ? 1 : 0,
-      $updatedAt: new Date().toISOString(),
-    })
-    .changes
+  const changes = stmt.run({
+    $id: id,
+    $isActive: novoEstado ? 1 : 0,
+    $updatedAt: new Date().toISOString(),
+  }).changes
 
   return changes > 0
 }

@@ -37,4 +37,3 @@ export const userResponseSchema = t.Object({
   createdAt: t.String({ format: 'date-time' }),
   updatedAt: t.String({ format: 'date-time' }),
 })
-

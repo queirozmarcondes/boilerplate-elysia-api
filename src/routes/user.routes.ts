@@ -38,12 +38,16 @@ export const userRoutes = new Elysia({ prefix: '/users' })
   // Criar novo usuário
   .post(
     '/',
-    async ({ body }) => {
-      return await createUser(body)
+    async ({ body, set }) => {
+      const user = await createUser(body);
+      set.status = 201
+      return user
     },
     {
       body: userCreateSchema,
-      response: userResponseSchema,
+      response: {
+        201: userResponseSchema,
+      },
       detail: { tags: ['Users'] },
     },
   )
